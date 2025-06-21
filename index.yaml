@@ -3,6 +3,22 @@ entries:
   guacamole:
   - apiVersion: v2
     appVersion: 1.5.5
+    created: "2025-06-21T15:44:06.28623207Z"
+    description: A Helm chart for deploying Guacamole, a clientless remote desktop
+      gateway that supports standard protocols like VNC, RDP, and SSH.
+    digest: 3e02ca9acef27edcd66a1044c4d9258fd192f58504d76cb8c720b02d5f2a0c2c
+    home: https://guacamole.apache.org/
+    icon: https://guacamole.apache.org/images/logos/guac-tricolor-logo.svg
+    name: guacamole
+    sources:
+    - https://github.com/apache/guacamole-client
+    - https://github.com/apache/guacamole-server
+    type: application
+    urls:
+    - https://github.com/dmunozv04/charts/releases/download/guacamole-0.1.3/guacamole-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.5.5
     created: "2025-06-21T15:36:37.470966979Z"
     description: A Helm chart for deploying Guacamole, a clientless remote desktop
       gateway that supports standard protocols like VNC, RDP, and SSH.
@@ -39,4 +55,4 @@ entries:
     urls:
     - https://github.com/dmunozv04/charts/releases/download/guacamole-0.1.0/guacamole-0.1.0.tgz
     version: 0.1.0
-generated: "2025-06-21T15:36:37.471010611Z"
+generated: "2025-06-21T15:44:06.286259281Z"
