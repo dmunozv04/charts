@@ -488,11 +488,11 @@
                   "title": "port",
                   "type": "string"
                 },
-                "user": {
+                "username": {
                   "default": "",
-                  "description": "MYSQL_USER: User that Guacamole will use to connect to MySQL (required)",
+                  "description": "MYSQL_USERNAME: User that Guacamole will use to connect to MySQL (required)",
                   "required": [],
-                  "title": "user",
+                  "title": "username",
                   "type": "string"
                 }
               },
@@ -501,7 +501,7 @@
                 "hostname",
                 "port",
                 "database",
-                "user",
+                "username",
                 "password",
                 "absoluteMaxConnections",
                 "defaultMaxConnections",
@@ -712,11 +712,11 @@
                   "title": "socketTimeout",
                   "type": "string"
                 },
-                "user": {
+                "username": {
                   "default": "",
-                  "description": "POSTGRESQL_USER: User that Guacamole will use to connect to PostgreSQL (required)",
+                  "description": "POSTGRESQL_USERNAME: User that Guacamole will use to connect to PostgreSQL (required)",
                   "required": [],
-                  "title": "user",
+                  "title": "username",
                   "type": "string"
                 }
               },
@@ -725,7 +725,7 @@
                 "hostname",
                 "port",
                 "database",
-                "user",
+                "username",
                 "password",
                 "absoluteMaxConnections",
                 "defaultMaxConnections",

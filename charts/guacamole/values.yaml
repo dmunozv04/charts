@@ -71,8 +71,8 @@ client:
       port: ""
       # POSTGRESQL_DATABASE: Name of the database to use for Guacamole authentication (required)
       database: ""
-      # POSTGRESQL_USER: User that Guacamole will use to connect to PostgreSQL (required)
-      user: ""
+      # POSTGRESQL_USERNAME: User that Guacamole will use to connect to PostgreSQL (required)
+      username: ""
       # POSTGRESQL_PASSWORD: Password for PostgreSQL user (required)
       password: ""
       
@@ -104,8 +104,8 @@ client:
       port: ""
       # MYSQL_DATABASE: Name of the database to use for Guacamole authentication (required)
       database: ""
-      # MYSQL_USER: User that Guacamole will use to connect to MySQL (required)
-      user: ""
+      # MYSQL_USERNAME: User that Guacamole will use to connect to MySQL (required)
+      username: ""
       # MYSQL_PASSWORD: Password for MySQL user (required)
       password: ""
       

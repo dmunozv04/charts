@@ -1,6 +1,6 @@
 # Apache Guacamole Helm Chart
 
-![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.5.5](https://img.shields.io/badge/AppVersion-1.5.5-informational?style=flat-square)
+![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.5.5](https://img.shields.io/badge/AppVersion-1.5.5-informational?style=flat-square)
 
 A Helm chart for deploying Apache Guacamole, a clientless remote desktop gateway that supports standard protocols like VNC, RDP and SSH.
 
@@ -73,7 +73,7 @@ helm install my-guacamole guacamole/guacamole --namespace guacamole --create-nam
          enabled: true
          hostname: "your-postgres-host"
          database: "guacamole"
-         user: "guacamole_user"
+         username: "guacamole_user"
          password: "your-secure-password"
    ```
 
@@ -98,7 +98,7 @@ helm install my-guacamole guacamole/guacamole --namespace guacamole --create-nam
          enabled: true
          hostname: "your-mysql-host"
          database: "guacamole"
-         user: "guacamole_user"
+         username: "guacamole_user"
          password: "your-secure-password"
    ```
 
@@ -249,7 +249,7 @@ client:
       enabled: true
       hostname: "postgres.default.svc.cluster.local"
       database: "guacamole"
-      user: "guacamole"
+      username: "guacamole"
       password: "secure-password"
   
   resources:
@@ -298,7 +298,7 @@ client:
       enabled: true
       hostname: "postgres.database.svc.cluster.local"
       database: "guacamole"
-      user: "guacamole"
+      username: "guacamole"
       password: "production-password"
   
   api:
@@ -380,7 +380,7 @@ client:
       enabled: true
       hostname: "postgres.default.svc.cluster.local"
       database: "guacamole"
-      user: "guacamole"
+      username: "guacamole"
       password: "db-password"
     
     ldap:

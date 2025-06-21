@@ -65,8 +65,8 @@ spec:
             - name: POSTGRESQL_DATABASE
               value: {{ . | quote }}
             {{- end }}
-            {{- with .Values.client.auth.postgresql.user }}
-            - name: POSTGRESQL_USER
+            {{- with .Values.client.auth.postgresql.username }}
+            - name: POSTGRESQL_USERNAME
               value: {{ . | quote }}
             {{- end }}
             {{- with .Values.client.auth.postgresql.password }}
@@ -119,8 +119,8 @@ spec:
             - name: MYSQL_DATABASE
               value: {{ . | quote }}
             {{- end }}
-            {{- with .Values.client.auth.mysql.user }}
-            - name: MYSQL_USER
+            {{- with .Values.client.auth.mysql.username }}
+            - name: MYSQL_USERNAME
               value: {{ . | quote }}
             {{- end }}
             {{- with .Values.client.auth.mysql.password }}
