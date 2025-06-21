@@ -37,16 +37,16 @@ client:
     #   memory: 256Mi
   
   # Health check probes for the client container
-  # HTTP probes check the /guacamole endpoint
+  # HTTP probes check the /guacamole/api/languages endpoint (a real health check endpoint doesn't exist)
   livenessProbe:
     httpGet:
-      path: /guacamole
+      path: /guacamole/api/languages
       port: http
     initialDelaySeconds: 60
     periodSeconds: 30
   readinessProbe:
     httpGet:
-      path: /guacamole
+      path: /guacamole/api/languages
       port: http
     initialDelaySeconds: 30
     periodSeconds: 10
@@ -498,6 +498,18 @@ client:
     # Requires shared volume between guacd (write, UID 1000) and client (read, UID 1001) containers
     searchPath: ""
 
+  # Node selector for client pod assignment
+  # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  nodeSelector: {}
+
+  # Tolerations for client pod assignment
+  # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+  tolerations: []
+
+  # Affinity rules for client pod assignment
+  # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  affinity: {}
+
 # Guacd Daemon configuration
 # The guacd daemon built from guacamole-server source with support for VNC, RDP, SSH, telnet, and Kubernetes
 # Handles the actual remote desktop protocol connections on behalf of the Guacamole web application
@@ -570,6 +582,18 @@ guacd:
   #   - name: ANOTHER_VAR
   #     value: "another-value"
   extraEnv: []
+
+  # Node selector for guacd pod assignment
+  # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  nodeSelector: {}
+
+  # Tolerations for guacd pod assignment
+  # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+  tolerations: []
+
+  # Affinity rules for guacd pod assignment
+  # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  affinity: {}
 
 # Global configuration shared by both client and guacd deployments
 
@@ -653,15 +677,3 @@ volumeMounts: []
 # - name: custom-config
 #   mountPath: "/etc/guacamole/custom"
 #   readOnly: true
-
-# Node selector for pod assignment
-# More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
-nodeSelector: {}
-
-# Tolerations for pod assignment
-# More information: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
-tolerations: []
-
-# Affinity rules for pod assignment
-# More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
-affinity: {}
