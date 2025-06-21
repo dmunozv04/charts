@@ -152,6 +152,112 @@ spec:
               value: {{ . | quote }}
             {{- end }}
             {{- end }}
+            
+            # SQL Server authentication
+            {{- if .Values.client.auth.sqlserver.enabled }}
+            {{- with .Values.client.auth.sqlserver.hostname }}
+            - name: SQLSERVER_HOSTNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.port }}
+            - name: SQLSERVER_PORT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.database }}
+            - name: SQLSERVER_DATABASE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.username }}
+            - name: SQLSERVER_USERNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.password }}
+            - name: SQLSERVER_PASSWORD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.driver }}
+            - name: SQLSERVER_DRIVER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.instance }}
+            - name: SQLSERVER_INSTANCE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.batchSize }}
+            - name: SQLSERVER_BATCH_SIZE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordMinLength }}
+            - name: SQLSERVER_USER_PASSWORD_MIN_LENGTH
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordRequireMultipleCase }}
+            - name: SQLSERVER_USER_PASSWORD_REQUIRE_MULTIPLE_CASE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordRequireSymbol }}
+            - name: SQLSERVER_USER_PASSWORD_REQUIRE_SYMBOL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordRequireDigit }}
+            - name: SQLSERVER_USER_PASSWORD_REQUIRE_DIGIT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordProhibitUsername }}
+            - name: SQLSERVER_USER_PASSWORD_PROHIBIT_USERNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordMinAge }}
+            - name: SQLSERVER_USER_PASSWORD_MIN_AGE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordMaxAge }}
+            - name: SQLSERVER_USER_PASSWORD_MAX_AGE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userPasswordHistorySize }}
+            - name: SQLSERVER_USER_PASSWORD_HISTORY_SIZE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.defaultMaxConnections }}
+            - name: SQLSERVER_DEFAULT_MAX_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.defaultMaxGroupConnections }}
+            - name: SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.defaultMaxConnectionsPerUser }}
+            - name: SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.defaultMaxGroupConnectionsPerUser }}
+            - name: SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.absoluteMaxConnections }}
+            - name: SQLSERVER_ABSOLUTE_MAX_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.userRequired }}
+            - name: SQLSERVER_USER_REQUIRED
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.autoCreateAccounts }}
+            - name: SQLSERVER_AUTO_CREATE_ACCOUNTS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.trackExternalConnectionHistory }}
+            - name: SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.sqlserver.enforceAccessWindowsForActiveSessions }}
+            - name: SQLSERVER_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            
+            # LDAP authentication
             {{- if .Values.client.auth.ldap.enabled }}
             {{- with .Values.client.auth.ldap.hostname }}
             - name: LDAP_HOSTNAME
@@ -342,6 +448,155 @@ spec:
               value: {{ . | quote }}
             {{- end }}
             {{- end }}
+            
+            # Duo multi-factor authentication
+            {{- if .Values.client.auth.duo.enabled }}
+            {{- with .Values.client.auth.duo.apiHostname }}
+            - name: DUO_API_HOSTNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.duo.clientId }}
+            - name: DUO_CLIENT_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.duo.clientSecret }}
+            - name: DUO_CLIENT_SECRET
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.duo.redirectUri }}
+            - name: DUO_REDIRECT_URI
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.duo.authTimeout }}
+            - name: DUO_AUTH_TIMEOUT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.duo.bypassHosts }}
+            - name: DUO_BYPASS_HOSTS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.duo.enforceHosts }}
+            - name: DUO_ENFORCE_HOSTS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            
+            # CAS Single Sign-On authentication
+            {{- if .Values.client.auth.cas.enabled }}
+            {{- with .Values.client.auth.cas.authorizationEndpoint }}
+            - name: CAS_AUTHORIZATION_ENDPOINT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.cas.redirectUri }}
+            - name: CAS_REDIRECT_URI
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.cas.clearpassKey }}
+            - name: CAS_CLEARPASS_KEY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.cas.groupAttribute }}
+            - name: CAS_GROUP_ATTRIBUTE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.cas.groupFormat }}
+            - name: CAS_GROUP_FORMAT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.cas.groupLdapBaseDn }}
+            - name: CAS_GROUP_LDAP_BASE_DN
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.cas.groupLdapAttribute }}
+            - name: CAS_GROUP_LDAP_ATTRIBUTE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            
+            # Encrypted JSON authentication
+            {{- if .Values.client.auth.json.enabled }}
+            {{- with .Values.client.auth.json.secretKey }}
+            - name: JSON_SECRET_KEY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            
+            # RADIUS authentication
+            {{- if .Values.client.auth.radius.enabled }}
+            {{- with .Values.client.auth.radius.hostname }}
+            - name: RADIUS_HOSTNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.authPort }}
+            - name: RADIUS_AUTH_PORT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.sharedSecret }}
+            - name: RADIUS_SHARED_SECRET
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.authProtocol }}
+            - name: RADIUS_AUTH_PROTOCOL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.keyFile }}
+            - name: RADIUS_KEY_FILE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.keyType }}
+            - name: RADIUS_KEY_TYPE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.keyPassword }}
+            - name: RADIUS_KEY_PASSWORD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.caFile }}
+            - name: RADIUS_CA_FILE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.caType }}
+            - name: RADIUS_CA_TYPE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.caPassword }}
+            - name: RADIUS_CA_PASSWORD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.trustAll }}
+            - name: RADIUS_TRUST_ALL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.retries }}
+            - name: RADIUS_RETRIES
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.timeout }}
+            - name: RADIUS_TIMEOUT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.eapTtlsInnerProtocol }}
+            - name: RADIUS_EAP_TTLS_INNER_PROTOCOL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.radius.nasIp }}
+            - name: RADIUS_NAS_IP
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            
+            # QuickConnect authentication
+            {{- if .Values.client.auth.quickconnect.enabled }}
+            {{- with .Values.client.auth.quickconnect.allowedParameters }}
+            - name: QUICKCONNECT_ALLOWED_PARAMETERS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.quickconnect.deniedParameters }}
+            - name: QUICKCONNECT_DENIED_PARAMETERS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            
             {{- with .Values.client.extensionPriority.order }}
             - name: EXTENSION_PRIORITY
               value: {{ . | quote }}

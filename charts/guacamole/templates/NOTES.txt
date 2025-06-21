@@ -22,7 +22,7 @@
 {{- end }}
 
 2. Authentication Setup:
-{{- if or .Values.client.auth.mysql.enabled .Values.client.auth.postgresql.enabled }}
+{{- if or .Values.client.auth.mysql.enabled .Values.client.auth.postgresql.enabled .Values.client.auth.sqlserver.enabled }}
    You have enabled database authentication. Make sure to:
    - Initialize your database with the Guacamole schema
    - Create the required database user and permissions
@@ -31,6 +31,9 @@
    {{- end }}
    {{- if .Values.client.auth.postgresql.enabled }}
    - For PostgreSQL, use: docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > initdb.sql
+   {{- end }}
+   {{- if .Values.client.auth.sqlserver.enabled }}
+   - For SQL Server, use: docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --sqlserver > initdb.sql
    {{- end }}
 {{- end }}
 {{- if .Values.client.auth.ldap.enabled }}
@@ -42,9 +45,24 @@
 {{- if .Values.client.auth.openid.enabled }}
    You have enabled OpenID Connect authentication. Configure your OpenID provider with the redirect URI.
 {{- end }}
+{{- if .Values.client.auth.duo.enabled }}
+   You have enabled Duo MFA. Configure your Duo application and provide the required credentials.
+{{- end }}
+{{- if .Values.client.auth.cas.enabled }}
+   You have enabled CAS SSO. Ensure your CAS server is accessible and properly configured.
+{{- end }}
+{{- if .Values.client.auth.radius.enabled }}
+   You have enabled RADIUS authentication. Ensure your RADIUS server is accessible.
+{{- end }}
+{{- if .Values.client.auth.json.enabled }}
+   You have enabled JSON signed authentication. Ensure your secret key is properly configured.
+{{- end }}
+{{- if .Values.client.auth.quickconnect.enabled }}
+   You have enabled QuickConnect. Users can create ad-hoc connections via the connection bar.
+{{- end }}
 
 3. Default Credentials (Database Authentication):
-   If using MySQL or PostgreSQL with a fresh database, the default credentials are:
+   If using MySQL, PostgreSQL, or SQL Server with a fresh database, the default credentials are:
    Username: guacadmin
    Password: guacadmin
    

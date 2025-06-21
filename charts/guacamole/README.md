@@ -1,6 +1,6 @@
 # Apache Guacamole Helm Chart
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.5.5](https://img.shields.io/badge/AppVersion-1.5.5-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.5.5](https://img.shields.io/badge/AppVersion-1.5.5-informational?style=flat-square)
 
 A Helm chart for deploying Apache Guacamole, a clientless remote desktop gateway that supports standard protocols like VNC, RDP and SSH.
 
@@ -13,7 +13,7 @@ Apache Guacamole is a clientless remote desktop gateway. It supports standard pr
 
 ## Features
 
-- 🔐 **Multiple Authentication Backends**: PostgreSQL, MySQL, LDAP, Header-based, SAML, TOTP, OpenID Connect
+- 🔐 **Multiple Authentication Backends**: PostgreSQL, MySQL, SQL Server, LDAP, SAML, OpenID Connect, Duo MFA, CAS, RADIUS, JSON signed, QuickConnect, Header-based, TOTP
 - 🎯 **Separate Deployments**: Independent scaling and configuration for client and guacd
 - 📈 **Auto-scaling**: Horizontal Pod Autoscaler support for both components
 - 🔧 **Highly Configurable**: Support for all major Guacamole environment variables
@@ -102,6 +102,32 @@ helm install my-guacamole guacamole/guacamole --namespace guacamole --create-nam
          password: "your-secure-password"
    ```
 
+### SQL Server Authentication
+
+1. **Initialize Database Schema**:
+
+   ```bash
+   # Generate the schema initialization script
+   docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --sqlserver > initdb.sql
+   
+   # Create database and apply schema
+   sqlcmd -S your-sqlserver-host -U SA -Q "CREATE DATABASE guacamole_db;"
+   sqlcmd -S your-sqlserver-host -U SA -d guacamole_db -i initdb.sql
+   ```
+
+2. **Configure Values**:
+
+   ```yaml
+   client:
+     auth:
+       sqlserver:
+         enabled: true
+         hostname: "your-sqlserver-host"
+         database: "guacamole_db"
+         username: "guacamole_user"
+         password: "your-secure-password"
+   ```
+
 ### Default Database Credentials
 
 ⚠️ **IMPORTANT**: When using a fresh database, the default credentials are:
@@ -151,6 +177,64 @@ client:
       issuer: "https://your-provider.com"
       clientId: "your-client-id"
       redirectUri: "https://your-guacamole.com/guacamole/"
+```
+
+### Duo Multi-Factor Authentication
+
+```yaml
+client:
+  auth:
+    duo:
+      enabled: true
+      apiHostname: "api-XXXXXXXX.duosecurity.com"
+      clientId: "your-client-id"
+      clientSecret: "your-client-secret"
+      redirectUri: "https://your-guacamole.com/guacamole/"
+```
+
+### CAS Single Sign-On
+
+```yaml
+client:
+  auth:
+    cas:
+      enabled: true
+      authorizationEndpoint: "https://cas.example.com"
+      redirectUri: "https://your-guacamole.com/guacamole/"
+```
+
+### RADIUS Authentication
+
+```yaml
+client:
+  auth:
+    radius:
+      enabled: true
+      hostname: "your-radius-server"
+      authPort: "1812"
+      sharedSecret: "your-shared-secret"
+      authProtocol: "pap"  # or chap, mschapv1, mschapv2, eap-md5, eap-tls, eap-ttls
+```
+
+### JSON Signed Authentication
+
+```yaml
+client:
+  auth:
+    json:
+      enabled: true
+      secretKey: "4c0b569e4c96df157eee1b65dd0e4d41"  # 32-digit hex key
+```
+
+### QuickConnect (Ad-hoc Connections)
+
+```yaml
+client:
+  auth:
+    quickconnect:
+      enabled: true
+      allowedParameters: "hostname,port,username"  # Optional: limit allowed parameters
+      deniedParameters: "password"  # Optional: explicitly deny parameters
 ```
 
 ## Configuration Examples
@@ -311,32 +395,19 @@ client:
       enabled: true
       idpUrl: "https://sso.company.com/saml/sso"
       entityId: "guacamole-prod"
+    
+    duo:
+      enabled: true
+      apiHostname: "api-XXXXXXXX.duosecurity.com"
+      clientId: "your-client-id"
+      clientSecret: "your-client-secret"
+      redirectUri: "https://guacamole.company.com/guacamole/"
   
   extensionPriority:
-    order: "saml, ldap, postgresql"
+    order: "saml, duo, ldap, postgresql"
   
   authProviders:
     skipIfUnavailable: "ldap"  # Continue if LDAP is down
-```
-
-## Upgrading
-
-### From 0.x to 0.1.0
-
-This version introduces separate deployments for client and guacd. Update your values.yaml:
-
-```yaml
-# Old format
-image:
-  repository: guacamole/guacamole
-
-# New format
-client:
-  image:
-    repository: guacamole/guacamole
-guacd:
-  image:
-    repository: guacamole/guacd
 ```
 
 ## Troubleshooting

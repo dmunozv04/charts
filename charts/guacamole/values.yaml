@@ -123,6 +123,69 @@ client:
       # MYSQL_AUTO_CREATE_ACCOUNTS: Auto-create accounts for users authenticated by other modules (true/false)
       autoCreateAccounts: ""
 
+    # SQL Server authentication backend
+    # Requires database initialization with Guacamole schema before use
+    sqlserver:
+      enabled: false
+      # SQLSERVER_HOSTNAME: Hostname of SQL Server (required if not using Docker links)
+      hostname: ""
+      # SQLSERVER_PORT: Port for SQL Server connection (optional, default: 1433)
+      port: ""
+      # SQLSERVER_DATABASE: Name of the database to use for Guacamole authentication (required)
+      database: ""
+      # SQLSERVER_USERNAME: User that Guacamole will use to connect to SQL Server (required)
+      username: ""
+      # SQLSERVER_PASSWORD: Password for SQL Server user (required)
+      password: ""
+      
+      # Optional SQL Server configuration
+      # SQLSERVER_DRIVER: TDS-compatible JDBC driver - "microsoft2005" (default), "microsoft", "jtds", "datadirect"
+      driver: ""
+      # SQLSERVER_INSTANCE: SQL Server instance name (optional, for non-default instances)
+      instance: ""
+      # SQLSERVER_BATCH_SIZE: Maximum objects per query (default: 500)
+      batchSize: ""
+      
+      # Password policy enforcement
+      # SQLSERVER_USER_PASSWORD_MIN_LENGTH: Minimum password length in characters
+      userPasswordMinLength: ""
+      # SQLSERVER_USER_PASSWORD_REQUIRE_MULTIPLE_CASE: Require both upper and lowercase (true/false)
+      userPasswordRequireMultipleCase: ""
+      # SQLSERVER_USER_PASSWORD_REQUIRE_SYMBOL: Require at least one symbol (true/false)
+      userPasswordRequireSymbol: ""
+      # SQLSERVER_USER_PASSWORD_REQUIRE_DIGIT: Require at least one digit (true/false)
+      userPasswordRequireDigit: ""
+      # SQLSERVER_USER_PASSWORD_PROHIBIT_USERNAME: Prohibit username in password (true/false)
+      userPasswordProhibitUsername: ""
+      # SQLSERVER_USER_PASSWORD_MIN_AGE: Minimum days before password change allowed
+      userPasswordMinAge: ""
+      # SQLSERVER_USER_PASSWORD_MAX_AGE: Maximum days before password change required
+      userPasswordMaxAge: ""
+      # SQLSERVER_USER_PASSWORD_HISTORY_SIZE: Number of previous passwords to remember
+      userPasswordHistorySize: ""
+      
+      # Connection limits
+      # SQLSERVER_DEFAULT_MAX_CONNECTIONS: Max concurrent connections per connection
+      defaultMaxConnections: ""
+      # SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS: Max concurrent connections per group
+      defaultMaxGroupConnections: ""
+      # SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER: Max connections per user per connection
+      defaultMaxConnectionsPerUser: ""
+      # SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER: Max connections per user per group
+      defaultMaxGroupConnectionsPerUser: ""
+      # SQLSERVER_ABSOLUTE_MAX_CONNECTIONS: Absolute maximum concurrent connections
+      absoluteMaxConnections: ""
+      
+      # External user and connection handling
+      # SQLSERVER_USER_REQUIRED: Require database user account for authentication (true/false)
+      userRequired: ""
+      # SQLSERVER_AUTO_CREATE_ACCOUNTS: Auto-create accounts for users authenticated by other modules (true/false)
+      autoCreateAccounts: ""
+      # SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY: Track history for external connections (true/false)
+      trackExternalConnectionHistory: ""
+      # SQLSERVER_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS: Enforce access windows for active sessions (true/false)
+      enforceAccessWindowsForActiveSessions: ""
+
     # LDAP authentication backend
     # Requires network access to an LDAP directory
     ldap:
@@ -243,6 +306,105 @@ client:
       maxTokenValidity: ""
       # OPENID_MAX_NONCE_VALIDITY: Maximum nonce validity in minutes (default: 10)
       maxNonceValidity: ""
+
+    # Duo multi-factor authentication
+    # Requires Duo account and Web SDK application setup
+    duo:
+      enabled: false
+      # DUO_API_HOSTNAME: Duo API hostname (e.g., api-XXXXXXXX.duosecurity.com) (required)
+      apiHostname: ""
+      # DUO_CLIENT_ID: Duo client ID from Web SDK application (required)
+      clientId: ""
+      # DUO_CLIENT_SECRET: Duo client secret from Web SDK application (required)
+      clientSecret: ""
+      # DUO_REDIRECT_URI: Full URL for Duo to redirect back to Guacamole (required)
+      redirectUri: ""
+      
+      # Optional Duo configuration
+      # DUO_AUTH_TIMEOUT: Maximum authentication time in minutes (default: 5)
+      authTimeout: ""
+      # DUO_BYPASS_HOSTS: Comma-separated list of IPs/subnets to bypass Duo (CIDR notation)
+      bypassHosts: ""
+      # DUO_ENFORCE_HOSTS: Comma-separated list of IPs/subnets to enforce Duo (CIDR notation)
+      enforceHosts: ""
+
+    # CAS Single Sign-On authentication
+    # Requires CAS server for authentication, must be layered with other auth extensions for connections
+    cas:
+      enabled: false
+      # CAS_AUTHORIZATION_ENDPOINT: Full URL to CAS authentication server base (required)
+      authorizationEndpoint: ""
+      # CAS_REDIRECT_URI: Full URL to redirect back to Guacamole after authentication (required)
+      redirectUri: ""
+      
+      # Optional CAS configuration
+      # CAS_CLEARPASS_KEY: Private key file for CAS ClearPass password decryption
+      clearpassKey: ""
+      # CAS_GROUP_ATTRIBUTE: CAS attribute for group membership (e.g., "memberOf")
+      groupAttribute: ""
+      # CAS_GROUP_FORMAT: Format for group names - "plain" or "ldap" (default: "plain")
+      groupFormat: ""
+      # CAS_GROUP_LDAP_BASE_DN: Base DN for LDAP-formatted groups (requires groupFormat: "ldap")
+      groupLdapBaseDn: ""
+      # CAS_GROUP_LDAP_ATTRIBUTE: LDAP attribute for group names (requires groupFormat: "ldap")
+      groupLdapAttribute: ""
+
+    # Encrypted JSON authentication
+    # Delegates authentication to external service via signed/encrypted JSON
+    json:
+      enabled: false
+      # JSON_SECRET_KEY: 128-bit AES key as 32-digit hexadecimal value (required)
+      # Generate with: echo -n "YourPassphrase" | md5sum
+      secretKey: ""
+
+    # RADIUS authentication
+    # Delegates authentication to RADIUS service, must be layered with other auth extensions
+    # Note: Requires building custom Docker image with LGPL extensions due to licensing
+    radius:
+      enabled: false
+      # RADIUS_HOSTNAME: RADIUS server hostname (default: "localhost")
+      hostname: ""
+      # RADIUS_AUTH_PORT: RADIUS authentication port (default: 1812)
+      authPort: ""
+      # RADIUS_SHARED_SECRET: Shared secret for RADIUS server (required)
+      sharedSecret: ""
+      # RADIUS_AUTH_PROTOCOL: Authentication protocol - "pap", "chap", "mschapv1", "mschapv2", 
+      #                        "eap-md5", "eap-tls", "eap-ttls" (required)
+      authProtocol: ""
+      
+      # Optional RADIUS configuration
+      # RADIUS_KEY_FILE: Path to client certificate/key file for TLS protocols (default: GUACAMOLE_HOME/radius.key)
+      keyFile: ""
+      # RADIUS_KEY_TYPE: Keystore type - "pem", "jceks", "jks", "pkcs12" (default: "pkcs12")
+      keyType: ""
+      # RADIUS_KEY_PASSWORD: Password for private key file
+      keyPassword: ""
+      # RADIUS_CA_FILE: Path to certificate authority file (default: GUACAMOLE_HOME/ca.crt)
+      caFile: ""
+      # RADIUS_CA_TYPE: CA keystore type - "pem", "jceks", "jks", "pkcs12" (default: "pem")
+      caType: ""
+      # RADIUS_CA_PASSWORD: Password for CA keystore
+      caPassword: ""
+      # RADIUS_TRUST_ALL: Trust all certificates without validation (true/false, default: false)
+      trustAll: ""
+      # RADIUS_RETRIES: Connection retry attempts (default: 5)
+      retries: ""
+      # RADIUS_TIMEOUT: Connection timeout in seconds (default: 60)
+      timeout: ""
+      # RADIUS_EAP_TTLS_INNER_PROTOCOL: Inner protocol for EAP-TTLS (required when authProtocol is eap-ttls)
+      eapTtlsInnerProtocol: ""
+      # RADIUS_NAS_IP: Manual NAS IP address (auto-detected if not specified)
+      nasIp: ""
+
+    # QuickConnect authentication
+    # Allows users to create ad-hoc connections via URI input
+    # Security warning: Users can set any connection parameters, including file sharing paths
+    quickconnect:
+      enabled: false
+      # QUICKCONNECT_ALLOWED_PARAMETERS: Comma-separated list of allowed connection parameters
+      allowedParameters: ""
+      # QUICKCONNECT_DENIED_PARAMETERS: Comma-separated list of denied connection parameters
+      deniedParameters: ""
 
   # Additional environment variables for the client container
   # Use this to set custom environment variables not covered by the auth sections above
