@@ -68,6 +68,8 @@ spec:
             {{- with .Values.client.auth.postgresql.username }}
             - name: POSTGRESQL_USERNAME
               value: {{ . | quote }}
+            - name: POSTGRESQL_USER
+              value: {{ . | quote }}
             {{- end }}
             {{- with .Values.client.auth.postgresql.password }}
             - name: POSTGRESQL_PASSWORD
@@ -122,6 +124,8 @@ spec:
             {{- with .Values.client.auth.mysql.username }}
             - name: MYSQL_USERNAME
               value: {{ . | quote }}
+            - name: MYSQL_USER
+              value: {{ . | quote }}
             {{- end }}
             {{- with .Values.client.auth.mysql.password }}
             - name: MYSQL_PASSWORD
@@ -169,6 +173,8 @@ spec:
             {{- end }}
             {{- with .Values.client.auth.sqlserver.username }}
             - name: SQLSERVER_USERNAME
+              value: {{ . | quote }}
+            - name: SQLSERVER_USER
               value: {{ . | quote }}
             {{- end }}
             {{- with .Values.client.auth.sqlserver.password }}
