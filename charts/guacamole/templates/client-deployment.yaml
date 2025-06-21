@@ -1,0 +1,410 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guacamole.fullname" . }}-client
+  labels:
+    {{- include "guacamole.labels" . | nindent 4 }}
+    app.kubernetes.io/component: client
+spec:
+  {{- if not .Values.client.autoscaling.enabled }}
+  replicas: {{ .Values.client.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "guacamole.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: client
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "guacamole.labels" . | nindent 8 }}
+        app.kubernetes.io/component: client
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "guacamole.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: guacamole-client
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.client.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.client.service.port }}
+              protocol: TCP
+          env:
+            - name: GUACD_HOSTNAME
+              value: {{ include "guacamole.fullname" . }}-guacd
+            - name: GUACD_PORT
+              value: "{{ .Values.guacd.service.port }}"
+            {{- if .Values.client.auth.postgresql.enabled }}
+            {{- with .Values.client.auth.postgresql.hostname }}
+            - name: POSTGRESQL_HOSTNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.port }}
+            - name: POSTGRESQL_PORT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.database }}
+            - name: POSTGRESQL_DATABASE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.user }}
+            - name: POSTGRESQL_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.password }}
+            - name: POSTGRESQL_PASSWORD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.absoluteMaxConnections }}
+            - name: POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.defaultMaxConnections }}
+            - name: POSTGRESQL_DEFAULT_MAX_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.defaultMaxGroupConnections }}
+            - name: POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.defaultMaxConnectionsPerUser }}
+            - name: POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.defaultMaxGroupConnectionsPerUser }}
+            - name: POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.autoCreateAccounts }}
+            - name: POSTGRESQL_AUTO_CREATE_ACCOUNTS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.defaultStatementTimeout }}
+            - name: POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.postgresql.socketTimeout }}
+            - name: POSTGRESQL_SOCKET_TIMEOUT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.client.auth.mysql.enabled }}
+            {{- with .Values.client.auth.mysql.hostname }}
+            - name: MYSQL_HOSTNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.port }}
+            - name: MYSQL_PORT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.database }}
+            - name: MYSQL_DATABASE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.user }}
+            - name: MYSQL_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.password }}
+            - name: MYSQL_PASSWORD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.absoluteMaxConnections }}
+            - name: MYSQL_ABSOLUTE_MAX_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.defaultMaxConnections }}
+            - name: MYSQL_DEFAULT_MAX_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.defaultMaxGroupConnections }}
+            - name: MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.defaultMaxConnectionsPerUser }}
+            - name: MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.defaultMaxGroupConnectionsPerUser }}
+            - name: MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.mysql.autoCreateAccounts }}
+            - name: MYSQL_AUTO_CREATE_ACCOUNTS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.client.auth.ldap.enabled }}
+            {{- with .Values.client.auth.ldap.hostname }}
+            - name: LDAP_HOSTNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.port }}
+            - name: LDAP_PORT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.encryptionMethod }}
+            - name: LDAP_ENCRYPTION_METHOD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.userBaseDn }}
+            - name: LDAP_USER_BASE_DN
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.groupBaseDn }}
+            - name: LDAP_GROUP_BASE_DN
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.groupSearchFilter }}
+            - name: LDAP_GROUP_SEARCH_FILTER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.groupNameAttribute }}
+            - name: LDAP_GROUP_NAME_ATTRIBUTE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.memberAttribute }}
+            - name: LDAP_MEMBER_ATTRIBUTE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.memberAttributeType }}
+            - name: LDAP_MEMBER_ATTRIBUTE_TYPE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.searchBindDn }}
+            - name: LDAP_SEARCH_BIND_DN
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.searchBindPassword }}
+            - name: LDAP_SEARCH_BIND_PASSWORD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.usernameAttribute }}
+            - name: LDAP_USERNAME_ATTRIBUTE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.userAttributes }}
+            - name: LDAP_USER_ATTRIBUTES
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.configBaseDn }}
+            - name: LDAP_CONFIG_BASE_DN
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.dereferenceAliases }}
+            - name: LDAP_DEREFERENCE_ALIASES
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.followReferrals }}
+            - name: LDAP_FOLLOW_REFERRALS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.maxReferralHops }}
+            - name: LDAP_MAX_REFERRAL_HOPS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.maxSearchResults }}
+            - name: LDAP_MAX_SEARCH_RESULTS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.ldap.operationTimeout }}
+            - name: LDAP_OPERATION_TIMEOUT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.client.auth.header.enabled }}
+            - name: HEADER_ENABLED
+              value: "true"
+            {{- with .Values.client.auth.header.httpAuthHeader }}
+            - name: HTTP_AUTH_HEADER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.client.auth.saml.enabled }}
+            {{- with .Values.client.auth.saml.idpMetadataUrl }}
+            - name: SAML_IDP_METADATA_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.idpUrl }}
+            - name: SAML_IDP_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.entityId }}
+            - name: SAML_ENTITY_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.callbackUrl }}
+            - name: SAML_CALLBACK_URL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.strict }}
+            - name: SAML_STRICT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.compressRequest }}
+            - name: SAML_COMPRESS_REQUEST
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.compressResponse }}
+            - name: SAML_COMPRESS_RESPONSE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.groupAttribute }}
+            - name: SAML_GROUP_ATTRIBUTE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.saml.debug }}
+            - name: SAML_DEBUG
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.client.auth.totp.enabled }}
+            - name: TOTP_ENABLED
+              value: "true"
+            {{- with .Values.client.auth.totp.issuer }}
+            - name: TOTP_ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.totp.digits }}
+            - name: TOTP_DIGITS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.totp.period }}
+            - name: TOTP_PERIOD
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.totp.mode }}
+            - name: TOTP_MODE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.client.auth.openid.enabled }}
+            {{- with .Values.client.auth.openid.authorizationEndpoint }}
+            - name: OPENID_AUTHORIZATION_ENDPOINT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.jwksEndpoint }}
+            - name: OPENID_JWKS_ENDPOINT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.issuer }}
+            - name: OPENID_ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.clientId }}
+            - name: OPENID_CLIENT_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.redirectUri }}
+            - name: OPENID_REDIRECT_URI
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.usernameClaimType }}
+            - name: OPENID_USERNAME_CLAIM_TYPE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.groupsClaimType }}
+            - name: OPENID_GROUPS_CLAIM_TYPE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.scope }}
+            - name: OPENID_SCOPE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.allowedClockSkew }}
+            - name: OPENID_ALLOWED_CLOCK_SKEW
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.maxTokenValidity }}
+            - name: OPENID_MAX_TOKEN_VALIDITY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.auth.openid.maxNonceValidity }}
+            - name: OPENID_MAX_NONCE_VALIDITY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.client.extensionPriority.order }}
+            - name: EXTENSION_PRIORITY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- if .Values.client.recording.enabled }}
+            {{- with .Values.client.recording.searchPath }}
+            - name: RECORDING_SEARCH_PATH
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.client.api.sessionTimeout }}
+            - name: API_SESSION_TIMEOUT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.api.maxRequestSize }}
+            - name: API_MAX_REQUEST_SIZE
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.i18n.allowedLanguages }}
+            - name: ALLOWED_LANGUAGES
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.caseSensitivity.mode }}
+            - name: CASE_SENSITIVITY
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.logging.level }}
+            - name: LOG_LEVEL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.authProviders.skipIfUnavailable }}
+            - name: SKIP_IF_UNAVAILABLE
+              value: {{ . | quote }}
+            {{- end }}
+          {{- with .Values.client.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.client.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.client.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

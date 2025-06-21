@@ -1,0 +1,505 @@
+# Default values for guacamole.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Guacamole Client configuration
+# The Guacamole web application running within Tomcat with support for WebSocket.
+# Configuration is generated automatically when the image starts based on environment variables.
+client:
+  # Number of replicas for the client deployment
+  # This will set the replicaset count for the client
+  replicaCount: 1
+  
+  # Container image configuration for the guacamole client
+  # Uses the official guacamole/guacamole Docker image
+  image:
+    repository: guacamole/guacamole
+    # Image pull policy - IfNotPresent, Always, or Never
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion
+    tag: ""
+  
+  # Service configuration for the Guacamole client
+  # Exposes the web application on port 8080
+  service:
+    # Service type - ClusterIP, NodePort, LoadBalancer, or ExternalName
+    type: ClusterIP
+    # Port where Guacamole web interface is accessible (default: 8080)
+    port: 8080
+  
+  # Resource limits and requests for the client container
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 250m
+    #   memory: 256Mi
+  
+  # Health check probes for the client container
+  # HTTP probes check the /guacamole endpoint
+  livenessProbe:
+    httpGet:
+      path: /guacamole
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /guacamole
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  
+  # Horizontal Pod Autoscaler configuration for the client
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+  # Authentication configuration
+  # Guacamole supports multiple authentication backends that can be combined
+  auth:
+    # PostgreSQL authentication backend
+    # Requires database initialization with Guacamole schema before use
+    postgresql:
+      enabled: false
+      # POSTGRESQL_HOSTNAME: Hostname of PostgreSQL server (required if not using Docker links)
+      hostname: ""
+      # POSTGRESQL_PORT: Port for PostgreSQL connection (optional, default: 5432)
+      port: ""
+      # POSTGRESQL_DATABASE: Name of the database to use for Guacamole authentication (required)
+      database: ""
+      # POSTGRESQL_USER: User that Guacamole will use to connect to PostgreSQL (required)
+      user: ""
+      # POSTGRESQL_PASSWORD: Password for PostgreSQL user (required)
+      password: ""
+      
+      # Optional configuration for connection limits and behavior
+      # POSTGRESQL_ABSOLUTE_MAX_CONNECTIONS: Absolute maximum concurrent connections across all users (0 = unlimited)
+      absoluteMaxConnections: ""
+      # POSTGRESQL_DEFAULT_MAX_CONNECTIONS: Default max connections per Guacamole connection (0 = unlimited)
+      defaultMaxConnections: ""
+      # POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS: Default max connections per connection group (0 = unlimited)
+      defaultMaxGroupConnections: ""
+      # POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER: Default max connections per user per connection (0 = unlimited)
+      defaultMaxConnectionsPerUser: ""
+      # POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER: Default max connections per user per group (default: 1)
+      defaultMaxGroupConnectionsPerUser: ""
+      # POSTGRESQL_AUTO_CREATE_ACCOUNTS: Auto-create accounts for users authenticated by other modules (true/false)
+      autoCreateAccounts: ""
+      # POSTGRESQL_DEFAULT_STATEMENT_TIMEOUT: Timeout for database queries in seconds (0 = disabled)
+      defaultStatementTimeout: ""
+      # POSTGRESQL_SOCKET_TIMEOUT: Timeout for socket read operations in seconds (0 = disabled)
+      socketTimeout: ""
+
+    # MySQL authentication backend
+    # Requires database initialization with Guacamole schema before use
+    mysql:
+      enabled: false
+      # MYSQL_HOSTNAME: Hostname of MySQL server (required if not using Docker links)
+      hostname: ""
+      # MYSQL_PORT: Port for MySQL connection (optional, default: 3306)
+      port: ""
+      # MYSQL_DATABASE: Name of the database to use for Guacamole authentication (required)
+      database: ""
+      # MYSQL_USER: User that Guacamole will use to connect to MySQL (required)
+      user: ""
+      # MYSQL_PASSWORD: Password for MySQL user (required)
+      password: ""
+      
+      # Optional configuration for connection limits and behavior
+      # MYSQL_ABSOLUTE_MAX_CONNECTIONS: Absolute maximum concurrent connections across all users (0 = unlimited)
+      absoluteMaxConnections: ""
+      # MYSQL_DEFAULT_MAX_CONNECTIONS: Default max connections per Guacamole connection (0 = unlimited)
+      defaultMaxConnections: ""
+      # MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS: Default max connections per connection group (0 = unlimited)
+      defaultMaxGroupConnections: ""
+      # MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER: Default max connections per user per connection (0 = unlimited)
+      defaultMaxConnectionsPerUser: ""
+      # MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER: Default max connections per user per group (default: 1)
+      defaultMaxGroupConnectionsPerUser: ""
+      # MYSQL_AUTO_CREATE_ACCOUNTS: Auto-create accounts for users authenticated by other modules (true/false)
+      autoCreateAccounts: ""
+
+    # LDAP authentication backend
+    # Requires network access to an LDAP directory
+    ldap:
+      enabled: false
+      # LDAP_HOSTNAME: Hostname or IP address of LDAP server (required)
+      hostname: ""
+      # LDAP_PORT: Port for LDAP connection (default: 389 for LDAP/STARTTLS, 636 for LDAPS)
+      port: ""
+      # LDAP_ENCRYPTION_METHOD: Encryption method - "none", "ssl", or "starttls"
+      encryptionMethod: ""
+      # LDAP_USER_BASE_DN: Base DN for all Guacamole users (required)
+      userBaseDn: ""
+      
+      # Optional LDAP configuration
+      # LDAP_GROUP_BASE_DN: Base DN for groups (required for seeAlso attribute support)
+      groupBaseDn: ""
+      # LDAP_GROUP_SEARCH_FILTER: Search filter for groups (default: "(objectClass=*)")
+      groupSearchFilter: ""
+      # LDAP_GROUP_NAME_ATTRIBUTE: Attribute defining group names (default: "cn")
+      groupNameAttribute: ""
+      # LDAP_MEMBER_ATTRIBUTE: Attribute containing group members (default: "member")
+      memberAttribute: ""
+      # LDAP_MEMBER_ATTRIBUTE_TYPE: Member identification type - "dn" or "uid" (default: "dn")
+      memberAttributeType: ""
+      # LDAP_SEARCH_BIND_DN: DN to bind as when searching for users
+      searchBindDn: ""
+      # LDAP_SEARCH_BIND_PASSWORD: Password for search bind DN
+      searchBindPassword: ""
+      # LDAP_USERNAME_ATTRIBUTE: Attribute containing usernames (default: "uid")
+      usernameAttribute: ""
+      # LDAP_USER_ATTRIBUTES: Attributes to retrieve for parameter tokens (comma-separated)
+      userAttributes: ""
+      # LDAP_CONFIG_BASE_DN: Base DN for Guacamole configurations
+      configBaseDn: ""
+      # LDAP_DEREFERENCE_ALIASES: Alias dereferencing - "never", "searching", "finding", "always" (default: "never")
+      dereferenceAliases: ""
+      # LDAP_FOLLOW_REFERRALS: Follow LDAP referrals - "true" or "false" (default: "false")
+      followReferrals: ""
+      # LDAP_MAX_REFERRAL_HOPS: Maximum referral hops when following referrals (default: 5)
+      maxReferralHops: ""
+      # LDAP_MAX_SEARCH_RESULTS: Maximum search results per LDAP query (default: 1000)
+      maxSearchResults: ""
+      # LDAP_OPERATION_TIMEOUT: Timeout for LDAP operations in seconds (default: 30)
+      operationTimeout: ""
+
+    # Header authentication
+    # Authenticates users through a trusted third-party server via HTTP headers
+    header:
+      enabled: false
+      # HTTP_AUTH_HEADER: Name of HTTP header containing username (default: "REMOTE_USER")
+      httpAuthHeader: ""
+
+    # SAML authentication
+    # Single Sign-On authentication with SAML Identity Providers
+    saml:
+      enabled: false
+      # SAML_IDP_METADATA_URL: URI of SAML IdP metadata file (local file or remote URL)
+      idpMetadataUrl: ""
+      # SAML_IDP_URL: URL of Identity Provider for user redirection (required if not in metadata)
+      idpUrl: ""
+      # SAML_ENTITY_ID: SAML Entity Identifier for this Guacamole instance (required if not in metadata)
+      entityId: ""
+      # SAML_CALLBACK_URL: Callback URL for IdP to redirect users back to Guacamole (required if not in metadata)
+      callbackUrl: ""
+      
+      # Optional SAML configuration
+      # SAML_STRICT: Enable strict security checks on servers and certificates (true/false, default: true)
+      strict: ""
+      # SAML_COMPRESS_REQUEST: Enable compression on requests to IdP (true/false, default: true)
+      compressRequest: ""
+      # SAML_COMPRESS_RESPONSE: Request compressed responses from IdP (true/false, default: true)
+      compressResponse: ""
+      # SAML_GROUP_ATTRIBUTE: Attribute name containing group memberships (default: "groups")
+      groupAttribute: ""
+      # SAML_DEBUG: Enable verbose logging for debugging (true/false, default: false)
+      debug: ""
+
+    # TOTP (Time-based One-Time Password) authentication
+    # Two-factor authentication using authenticator applications
+    totp:
+      enabled: false
+      
+      # Optional TOTP configuration
+      # TOTP_ISSUER: Human-readable name of the issuing entity (default: "Apache Guacamole")
+      issuer: ""
+      # TOTP_DIGITS: Number of digits in generated codes - 6, 7, or 8 (default: 6)
+      digits: ""
+      # TOTP_PERIOD: Code validity duration in seconds (default: 30)
+      period: ""
+      # TOTP_MODE: Hash algorithm - "sha1", "sha256", or "sha512" (default: "sha1")
+      mode: ""
+
+    # OpenID Connect authentication
+    # Single Sign-On using OpenID Connect standard (OAuth 2.0 identity layer)
+    openid:
+      enabled: false
+      # OPENID_AUTHORIZATION_ENDPOINT: Authorization endpoint URI of OpenID service (required)
+      authorizationEndpoint: ""
+      # OPENID_JWKS_ENDPOINT: JWKS endpoint URI for JWT validation (required)
+      jwksEndpoint: ""
+      # OPENID_ISSUER: Expected issuer for all received ID tokens (required)
+      issuer: ""
+      # OPENID_CLIENT_ID: OpenID client ID for this application (required)
+      clientId: ""
+      # OPENID_REDIRECT_URI: Full URL for IdP to redirect users back to Guacamole (required)
+      redirectUri: ""
+      
+      # Optional OpenID Connect configuration
+      # OPENID_USERNAME_CLAIM_TYPE: JWT claim containing username (default: "email")
+      usernameClaimType: ""
+      # OPENID_GROUPS_CLAIM_TYPE: JWT claim containing group memberships (default: "groups")
+      groupsClaimType: ""
+      # OPENID_SCOPE: Space-separated OpenID scopes to request (default: "openid email profile")
+      scope: ""
+      # OPENID_ALLOWED_CLOCK_SKEW: Clock skew tolerance in seconds (default: 30)
+      allowedClockSkew: ""
+      # OPENID_MAX_TOKEN_VALIDITY: Maximum token validity in minutes (default: 300)
+      maxTokenValidity: ""
+      # OPENID_MAX_NONCE_VALIDITY: Maximum nonce validity in minutes (default: 10)
+      maxNonceValidity: ""
+
+  # Additional environment variables for the client container
+  # Use this to set custom environment variables not covered by the auth sections above
+  extraEnv: []
+  # - name: CUSTOM_VAR
+  #   value: "custom-value"
+  # - name: ANOTHER_VAR
+  #   value: "another-value"
+
+  # Session and API configuration
+  # Controls session timeouts, request limits, and other API behavior
+  api:
+    # API_SESSION_TIMEOUT: Session timeout in minutes for inactive authentication tokens (default: 60)
+    sessionTimeout: ""
+    # API_MAX_REQUEST_SIZE: Maximum HTTP request body size in bytes, 0 = unlimited (default: 2097152 / 2MB)
+    # Note: Reverse proxies may enforce their own limits (e.g., Nginx defaults to 1MB)
+    maxRequestSize: ""
+
+  # Internationalization configuration
+  # Controls available languages in the Guacamole interface
+  i18n:
+    # ALLOWED_LANGUAGES: Comma-separated whitelist of language keys (e.g., "en, de, fr")
+    # English is the fallback language and should only be omitted if you're certain no strings are missing
+    # If omitted, all defined languages will be available
+    allowedLanguages: ""
+
+  # User and group name case sensitivity configuration
+  # Controls how Guacamole handles case comparisons for identifiers
+  caseSensitivity:
+    # CASE_SENSITIVITY: Controls case sensitivity for usernames and group names
+    # Options: "enabled" (both case-sensitive), "usernames" (only usernames case-sensitive),
+    #          "group-names" (only group names case-sensitive), "disabled" (both case-insensitive)
+    # Default: "enabled" - maintains backward compatibility with previous Guacamole versions
+    # Note: This controls Guacamole's handling, not the underlying authentication system behavior
+    mode: ""
+
+  # Logging configuration
+  # Controls the verbosity level of Guacamole web application logs
+  logging:
+    # LOG_LEVEL: Most verbose level of log messages to display in web application logs
+    # Options: "error", "warn", "info", "debug", "trace" (in order of increasing verbosity)
+    # Default: "info" - provides reasonable detail without excessive verbosity
+    # Can also be configured via logback.xml file for greater flexibility
+    level: ""
+
+  # Authentication provider configuration
+  # Controls behavior when authentication providers fail
+  authProviders:
+    # SKIP_IF_UNAVAILABLE: Comma-separated list of auth provider IDs to skip if they fail internally
+    # Allows other providers to continue functioning when specific systems are down
+    # Example: "mysql, ldap" - skip MySQL and LDAP if they're unavailable
+    # By default, Guacamole aborts authentication if any provider fails
+    skipIfUnavailable: ""
+
+  # Proxy configuration for running Guacamole behind a reverse proxy
+  # Configures Tomcat's RemoteIpValve to correctly determine user IP addresses
+  proxy:
+    # REMOTE_IP_VALVE_ENABLED: Enable Tomcat's RemoteIpValve (required to enable proxy support)
+    enabled: false
+    
+    # Optional proxy configuration (default values are correct for most deployments)
+    # PROXY_ALLOWED_IPS_REGEX: Regex matching trusted proxy IP addresses (Java Pattern format)
+    allowedIpsRegex: ""
+    # PROXY_BY_HEADER: HTTP header containing list of proxies (default: "X-Forwarded-By")
+    byHeader: ""
+    # PROXY_IP_HEADER: HTTP header containing user's IP address (default: "X-Forwarded-For")
+    ipHeader: ""
+    # PROXY_PROTOCOL_HEADER: HTTP header containing protocol used (default: "X-Forwarded-Proto")
+    protocolHeader: ""
+
+  # Custom extensions and GUACAMOLE_HOME configuration
+  # Allows use of custom or third-party extensions not supported by the Docker image
+  guacamoleHome:
+    # GUACAMOLE_HOME: Absolute path to custom GUACAMOLE_HOME directory within container
+    # Used as a template for automatically-generated configuration
+    path: ""
+
+  # Extension priority and load order
+  # Controls the order in which authentication extensions are loaded and evaluated
+  extensionPriority:
+    # EXTENSION_PRIORITY: Comma-separated list of extension namespaces in load order
+    # Use "*" to represent all unlisted extensions
+    # Example: "saml, *, postgresql" loads SAML first, then others, then PostgreSQL last
+    order: ""
+
+  # History Recording Storage Extension
+  # Enables viewing historical session recordings from within the Guacamole web interface
+  recording:
+    enabled: false
+    # RECORDING_SEARCH_PATH: Absolute path to folder containing session recordings
+    # Requires shared volume between guacd (write, UID 1000) and client (read, UID 1001) containers
+    searchPath: ""
+
+# Guacd Daemon configuration
+# The guacd daemon built from guacamole-server source with support for VNC, RDP, SSH, telnet, and Kubernetes
+# Handles the actual remote desktop protocol connections on behalf of the Guacamole web application
+guacd:
+  # Number of replicas for the guacd deployment
+  # This will set the replicaset count for guacd
+  replicaCount: 1
+  
+  # Container image configuration for guacd
+  # Uses the official guacamole/guacd Docker image
+  image:
+    repository: guacamole/guacd
+    # Image pull policy - IfNotPresent, Always, or Never
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion
+    tag: ""
+  
+  # Service configuration for guacd
+  # Exposes the guacd daemon on port 4822 for client connections
+  service:
+    # Service type - ClusterIP, NodePort, LoadBalancer, or ExternalName
+    # Note: ClusterIP is recommended as guacd should only be accessible by the client
+    type: ClusterIP
+    # Port where guacd listens for connections (standard guacd port: 4822)
+    port: 4822
+  
+  # Resource limits and requests for the guacd container
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 250m
+    #   memory: 256Mi
+  
+  # Health check probes for the guacd container
+  # TCP socket probes check connectivity to the guacd port
+  livenessProbe:
+    tcpSocket:
+      port: 4822
+    initialDelaySeconds: 30
+    periodSeconds: 30
+  readinessProbe:
+    tcpSocket:
+      port: 4822
+    initialDelaySeconds: 10
+    periodSeconds: 10
+  
+  # Horizontal Pod Autoscaler configuration for guacd
+  # Note: Lower max replicas than client as guacd is typically less resource intensive
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+  
+  # Log level configuration for guacd
+  # Controls the verbosity of guacd logging output
+  # Available levels: error, warn, info, debug, trace
+  # Leave empty to use guacd default
+  # More information: https://guacamole.apache.org/doc/gug/configuring-guacamole.html#guacd-logging
+  logLevel: ""
+  
+  # Additional environment variables for guacd
+  # Useful for custom configuration or third-party extensions
+  # Example:
+  # extraEnv:
+  #   - name: CUSTOM_GUACD_VAR
+  #     value: "custom-value"
+  #   - name: ANOTHER_VAR
+  #     value: "another-value"
+  extraEnv: []
+
+# Global configuration shared by both client and guacd deployments
+
+# Image pull secrets for private container registries
+# More information: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+
+# Override the chart name used in resource naming
+nameOverride: ""
+fullnameOverride: ""
+
+# Service account configuration
+# More information: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Pod annotations for both client and guacd pods
+# More information: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
+# Pod labels for both client and guacd pods
+# More information: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+# Security context for both client and guacd pods
+# More information: https://kubernetes.io/docs/concepts/security/security-context/
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# Security context for containers within both client and guacd pods
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# Ingress configuration for the Guacamole web interface
+# Only applies to the client service - guacd should not be exposed externally
+# More information: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# Additional volumes to mount in both client and guacd deployments
+# Useful for shared storage like recording directories or custom configurations
+volumes: []
+# - name: recordings
+#   persistentVolumeClaim:
+#     claimName: guacamole-recordings
+# - name: custom-config
+#   configMap:
+#     name: guacamole-config
+
+# Additional volume mounts for both client and guacd containers
+volumeMounts: []
+# - name: recordings
+#   mountPath: "/opt/guacamole/recordings"
+#   readOnly: true  # Client only needs read access
+# - name: custom-config
+#   mountPath: "/etc/guacamole/custom"
+#   readOnly: true
+
+# Node selector for pod assignment
+# More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+nodeSelector: {}
+
+# Tolerations for pod assignment
+# More information: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+tolerations: []
+
+# Affinity rules for pod assignment
+# More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+affinity: {}

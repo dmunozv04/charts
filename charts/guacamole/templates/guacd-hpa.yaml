@@ -1,0 +1,33 @@
+{{- if .Values.guacd.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "guacamole.fullname" . }}-guacd
+  labels:
+    {{- include "guacamole.labels" . | nindent 4 }}
+    app.kubernetes.io/component: guacd
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "guacamole.fullname" . }}-guacd
+  minReplicas: {{ .Values.guacd.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.guacd.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.guacd.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.guacd.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.guacd.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.guacd.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

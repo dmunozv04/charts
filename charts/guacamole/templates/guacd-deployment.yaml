@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guacamole.fullname" . }}-guacd
+  labels:
+    {{- include "guacamole.labels" . | nindent 4 }}
+    app.kubernetes.io/component: guacd
+spec:
+  {{- if not .Values.guacd.autoscaling.enabled }}
+  replicas: {{ .Values.guacd.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "guacamole.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: guacd
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "guacamole.labels" . | nindent 8 }}
+        app.kubernetes.io/component: guacd
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "guacamole.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: guacd
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.guacd.image.repository }}:{{ .Values.guacd.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.guacd.image.pullPolicy }}
+          ports:
+            - name: guacd
+              containerPort: {{ .Values.guacd.service.port }}
+              protocol: TCP
+          {{- if or .Values.guacd.logLevel .Values.guacd.extraEnv }}
+          env:
+            {{- with .Values.guacd.logLevel }}
+            - name: LOG_LEVEL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.guacd.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- with .Values.guacd.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.guacd.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.guacd.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

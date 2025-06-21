@@ -1,0 +1,51 @@
+1. Get the Guacamole application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.client.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "guacamole.fullname" . }}-client)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT/guacamole/
+{{- else if contains "LoadBalancer" .Values.client.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "guacamole.fullname" . }}-client'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "guacamole.fullname" . }}-client --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.client.service.port }}/guacamole/
+{{- else if contains "ClusterIP" .Values.client.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "guacamole.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=client" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080/guacamole/ to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
+
+2. Authentication Setup:
+{{- if or .Values.client.auth.mysql.enabled .Values.client.auth.postgresql.enabled }}
+   You have enabled database authentication. Make sure to:
+   - Initialize your database with the Guacamole schema
+   - Create the required database user and permissions
+   {{- if .Values.client.auth.mysql.enabled }}
+   - For MySQL, use: docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --mysql > initdb.sql
+   {{- end }}
+   {{- if .Values.client.auth.postgresql.enabled }}
+   - For PostgreSQL, use: docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > initdb.sql
+   {{- end }}
+{{- end }}
+{{- if .Values.client.auth.ldap.enabled }}
+   You have enabled LDAP authentication. Ensure your LDAP server is accessible.
+{{- end }}
+{{- if .Values.client.auth.saml.enabled }}
+   You have enabled SAML authentication. Configure your Identity Provider with the callback URL.
+{{- end }}
+{{- if .Values.client.auth.openid.enabled }}
+   You have enabled OpenID Connect authentication. Configure your OpenID provider with the redirect URI.
+{{- end }}
+
+3. Default Credentials (Database Authentication):
+   If using MySQL or PostgreSQL with a fresh database, the default credentials are:
+   Username: guacadmin
+   Password: guacadmin
+   
+   ⚠️  IMPORTANT: Change these credentials immediately after first login!
