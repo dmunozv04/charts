@@ -5,6 +5,7 @@ metadata:
   name: {{ include "guacamole.fullname" . }}
   labels:
     {{- include "guacamole.labels" . | nindent 4 }}
+    app.kubernetes.io/component: client
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

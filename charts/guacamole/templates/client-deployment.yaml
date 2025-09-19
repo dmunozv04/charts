@@ -602,6 +602,28 @@ spec:
               value: {{ . | quote }}
             {{- end }}
             {{- end }}
+
+            # Proxy/RemoteIpValve configuration
+            {{- if .Values.client.proxy.enabled }}
+            - name: REMOTE_IP_VALVE_ENABLED
+              value: "true"
+            {{- with .Values.client.proxy.allowedIpsRegex }}
+            - name: PROXY_ALLOWED_IPS_REGEX
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.proxy.byHeader }}
+            - name: PROXY_BY_HEADER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.proxy.ipHeader }}
+            - name: PROXY_IP_HEADER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.proxy.protocolHeader }}
+            - name: PROXY_PROTOCOL_HEADER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
             
             {{- with .Values.client.extensionPriority.order }}
             - name: EXTENSION_PRIORITY
@@ -635,6 +657,12 @@ spec:
             {{- end }}
             {{- with .Values.client.authProviders.skipIfUnavailable }}
             - name: SKIP_IF_UNAVAILABLE
+              value: {{ . | quote }}
+            {{- end }}
+
+            # Custom GUACAMOLE_HOME configuration
+            {{- with .Values.client.guacamoleHome.path }}
+            - name: GUACAMOLE_HOME
               value: {{ . | quote }}
             {{- end }}
           {{- with .Values.client.livenessProbe }}
