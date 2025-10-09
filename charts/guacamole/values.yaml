@@ -414,6 +414,22 @@ client:
   # - name: ANOTHER_VAR
   #   value: "another-value"
 
+  # Brute-force authentication detection (available since Guacamole 1.6.0)
+  # Detects and blocks brute-force login attacks by tracking failed authentication attempts
+  # IMPORTANT: Ensure Guacamole receives correct client IP addresses when behind a reverse proxy
+  ban:
+    # BAN_ENABLED: Enable brute-force authentication detection (true/false, default: true in Docker)
+    # Set to false to disable the extension completely
+    enabled: true
+    
+    # Optional ban configuration
+    # BAN_MAX_INVALID_ATTEMPTS: Number of failed logins before blocking IP (default: 5)
+    maxInvalidAttempts: ""
+    # BAN_ADDRESS_DURATION: Ban duration in seconds after max failures (default: 300 / 5 minutes)
+    addressDuration: ""
+    # BAN_MAX_ADDRESSES: Maximum IP addresses tracked in-memory (default: 10485670 / 10 million)
+    maxAddresses: ""
+
   # Session and API configuration
   # Controls session timeouts, request limits, and other API behavior
   api:

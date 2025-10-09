@@ -602,6 +602,27 @@ spec:
               value: {{ . | quote }}
             {{- end }}
             {{- end }}
+            
+            # Brute-force authentication detection
+            {{- if .Values.client.ban.enabled }}
+            - name: BAN_ENABLED
+              value: "true"
+            {{- with .Values.client.ban.maxInvalidAttempts }}
+            - name: BAN_MAX_INVALID_ATTEMPTS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.ban.addressDuration }}
+            - name: BAN_ADDRESS_DURATION
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.client.ban.maxAddresses }}
+            - name: BAN_MAX_ADDRESSES
+              value: {{ . | quote }}
+            {{- end }}
+            {{- else }}
+            - name: BAN_ENABLED
+              value: "false"
+            {{- end }}
 
             # Proxy/RemoteIpValve configuration
             {{- if .Values.client.proxy.enabled }}
