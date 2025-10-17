@@ -686,6 +686,11 @@ spec:
             - name: GUACAMOLE_HOME
               value: {{ . | quote }}
             {{- end }}
+            
+            # Additional custom environment variables
+            {{- with .Values.client.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- with .Values.client.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
