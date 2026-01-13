@@ -47,6 +47,11 @@ spec:
             - name: http
               containerPort: {{ .Values.client.service.port }}
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.client.envFrom.configMap }}
+            - secretRef:
+                name: {{ .Values.client.envFrom.secret }}
           env:
             - name: GUACD_HOSTNAME
               value: {{ include "guacamole.fullname" . }}-guacd
