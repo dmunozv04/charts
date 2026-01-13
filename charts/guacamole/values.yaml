@@ -526,6 +526,22 @@ client:
   # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   affinity: {}
 
+  # Init containers for the client pod
+  # Useful for database initialization, secret fetching, or other pre-start tasks
+  # More information: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  initContainers: []
+  # - name: init-database
+  #   image: busybox:1.36
+  #   command: ['sh', '-c', 'echo "Waiting for database..." && sleep 10']
+  # - name: init-config
+  #   image: busybox:1.36
+  #   command: ['sh', '-c', 'cp /config/* /shared/']
+  #   volumeMounts:
+  #     - name: config
+  #       mountPath: /config
+  #     - name: shared
+  #       mountPath: /shared
+
 # Guacd Daemon configuration
 # The guacd daemon built from guacamole-server source with support for VNC, RDP, SSH, telnet, and Kubernetes
 # Handles the actual remote desktop protocol connections on behalf of the Guacamole web application
@@ -610,6 +626,17 @@ guacd:
   # Affinity rules for guacd pod assignment
   # More information: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   affinity: {}
+
+  # Init containers for the guacd pod
+  # Useful for waiting on dependencies or preparing shared storage
+  # More information: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  initContainers: []
+  # - name: init-recordings
+  #   image: busybox:1.36
+  #   command: ['sh', '-c', 'mkdir -p /recordings && chmod 1777 /recordings']
+  #   volumeMounts:
+  #     - name: recordings
+  #       mountPath: /recordings
 
 # Global configuration shared by both client and guacd deployments
 

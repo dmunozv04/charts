@@ -337,6 +337,35 @@ ingress:
 
 ## Advanced Configuration
 
+### Init Containers
+
+Init containers can be added to either the client or guacd deployments for tasks like database initialization, waiting for dependencies, or preparing shared storage.
+
+```yaml
+client:
+  initContainers:
+    - name: wait-for-database
+      image: busybox:1.36
+      command: ['sh', '-c', 'until nc -z postgres.default.svc.cluster.local 5432; do echo waiting for database; sleep 2; done']
+    - name: init-config
+      image: busybox:1.36
+      command: ['sh', '-c', 'cp /config/* /shared/']
+      volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: shared
+          mountPath: /shared
+
+guacd:
+  initContainers:
+    - name: init-recordings
+      image: busybox:1.36
+      command: ['sh', '-c', 'mkdir -p /recordings && chmod 1777 /recordings']
+      volumeMounts:
+        - name: recordings
+          mountPath: /recordings
+```
+
 ### Session Recording
 
 ```yaml
@@ -463,12 +492,14 @@ kubectl exec -it deployment/my-guacamole-client -- nc -zv postgres.default.svc.c
 | client.image.pullPolicy | string | `"IfNotPresent"` | Client image pull policy |
 | client.service.type | string | `"ClusterIP"` | Client service type |
 | client.service.port | int | `8080` | Client service port |
+| client.initContainers | list | `[]` | Init containers for the client pod |
 | client.auth.postgresql.enabled | bool | `false` | Enable PostgreSQL authentication |
 | client.auth.mysql.enabled | bool | `false` | Enable MySQL authentication |
 | client.auth.ldap.enabled | bool | `false` | Enable LDAP authentication |
 | guacd.replicaCount | int | `1` | Number of guacd replicas |
 | guacd.image.repository | string | `"guacamole/guacd"` | Guacd container image repository |
 | guacd.service.port | int | `4822` | Guacd service port |
+| guacd.initContainers | list | `[]` | Init containers for the guacd pod |
 | ingress.enabled | bool | `false` | Enable ingress |
 
 For a complete list of values, see `values.yaml`.
