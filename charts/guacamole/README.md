@@ -1,6 +1,6 @@
 # Apache Guacamole Helm Chart
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
 
 A Helm chart for deploying Apache Guacamole, a clientless remote desktop gateway that supports standard protocols like VNC, RDP and SSH.
 
@@ -13,14 +13,15 @@ Apache Guacamole is a clientless remote desktop gateway. It supports standard pr
 
 ## Features
 
-- 🔐 **Multiple Authentication Backends**: PostgreSQL, MySQL, SQL Server, LDAP, SAML, OpenID Connect, Duo MFA, CAS, RADIUS, JSON signed, QuickConnect, Header-based, TOTP
-- 🎯 **Separate Deployments**: Independent scaling and configuration for client and guacd
-- 📈 **Auto-scaling**: Horizontal Pod Autoscaler support for both components
-- 🔧 **Highly Configurable**: Support for all major Guacamole environment variables
-- 🛡️ **Security**: Service accounts, security contexts, and proxy support
-- 📊 **Monitoring**: Health checks and resource management
-- 🌐 **Ingress**: Built-in ingress support with TLS
-- 📝 **Documentation**: Comprehensive values documentation
+- **Multiple Authentication Backends**: PostgreSQL, MySQL, SQL Server, LDAP, SAML, OpenID Connect, Duo MFA, CAS, RADIUS, JSON signed, QuickConnect, Header-based, TOTP
+- **Separate Deployments**: Independent scaling and configuration for client and guacd
+- **Auto-scaling**: Horizontal Pod Autoscaler support for both components
+- **Highly Configurable**: Support for all major Guacamole environment variables
+- **Security**: Service accounts, security contexts, and proxy support
+- **Monitoring**: Health checks and resource management
+- **Ingress**: Built-in ingress support with TLS
+- **Gateway API**: HTTPRoute support for advanced traffic management
+- **Documentation**: Comprehensive values documentation
 
 ## Prerequisites
 
@@ -283,6 +284,27 @@ ingress:
         - guacamole.example.com
 ```
 
+### Gateway API HTTPRoute
+
+```yaml
+# Using Gateway API instead of traditional Ingress
+httpRoute:
+  enabled: true
+  annotations:
+    example.com/policy: "rate-limit"
+  parentRefs:
+    - name: my-gateway
+      namespace: gateway-system
+      sectionName: http
+  hostnames:
+    - guacamole.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+```
+
 ### Production Deployment with Auto-scaling
 
 ```yaml
@@ -501,6 +523,7 @@ kubectl exec -it deployment/my-guacamole-client -- nc -zv postgres.default.svc.c
 | guacd.service.port | int | `4822` | Guacd service port |
 | guacd.initContainers | list | `[]` | Init containers for the guacd pod |
 | ingress.enabled | bool | `false` | Enable ingress |
+| httpRoute.enabled | bool | `false` | Enable Gateway API HTTPRoute |
 
 For a complete list of values, see `values.yaml`.
 
