@@ -51,6 +51,17 @@ spec:
             - name: guacd
               containerPort: {{ .Values.guacd.service.port }}
               protocol: TCP
+          {{- if or .Values.guacd.envFrom.configMap .Values.guacd.envFrom.secret }}
+          envFrom:
+            {{- with .Values.guacd.envFrom.configMap }}
+            - configMapRef:
+                name: {{ . }}
+            {{- end }}
+            {{- with .Values.guacd.envFrom.secret }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+          {{- end }}
           {{- if or .Values.guacd.logLevel .Values.guacd.extraEnv }}
           env:
             {{- with .Values.guacd.logLevel }}

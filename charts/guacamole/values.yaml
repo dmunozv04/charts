@@ -406,6 +406,14 @@ client:
       # QUICKCONNECT_DENIED_PARAMETERS: Comma-separated list of denied connection parameters
       deniedParameters: ""
 
+  # Environment variables from ConfigMaps and Secrets
+  # Used to load environment variables from external ConfigMaps and Secrets
+  envFrom:
+    # Name of ConfigMap containing environment variables
+    configMap: ""
+    # Name of Secret containing environment variables
+    secret: ""
+  
   # Additional environment variables for the client container
   # Use this to set custom environment variables not covered by the auth sections above
   extraEnv: []
@@ -604,6 +612,14 @@ guacd:
   # Leave empty to use guacd default
   # More information: https://guacamole.apache.org/doc/gug/configuring-guacamole.html#guacd-logging
   logLevel: ""
+  
+  # Environment variables from ConfigMaps and Secrets
+  # Used to load environment variables from external ConfigMaps and Secrets
+  envFrom:
+    # Name of ConfigMap containing environment variables
+    configMap: ""
+    # Name of Secret containing environment variables
+    secret: ""
   
   # Additional environment variables for guacd
   # Useful for custom configuration or third-party extensions

@@ -1,6 +1,6 @@
 # Apache Guacamole Helm Chart
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
+![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
 
 A Helm chart for deploying Apache Guacamole, a clientless remote desktop gateway that supports standard protocols like VNC, RDP and SSH.
 
@@ -407,6 +407,28 @@ volumes:
       claimName: guacamole-recordings
 ```
 
+### Environment Variables from ConfigMaps and Secrets
+
+Both the client and guacd deployments support loading environment variables from ConfigMaps and Secrets using `envFrom`. This is useful for managing configuration externally or integrating with secret management systems.
+
+```yaml
+client:
+  envFrom:
+    configMap: "guacamole-client-config"
+    secret: "guacamole-client-secrets"
+  extraEnv:
+    - name: ADDITIONAL_VAR
+      value: "additional-value"
+
+guacd:
+  envFrom:
+    configMap: "guacd-config"
+    secret: "guacd-secrets"
+  extraEnv:
+    - name: CUSTOM_GUACD_VAR
+      value: "custom-value"
+```
+
 ### Custom Extensions
 
 ```yaml
@@ -514,6 +536,9 @@ kubectl exec -it deployment/my-guacamole-client -- nc -zv postgres.default.svc.c
 | client.image.pullPolicy | string | `"IfNotPresent"` | Client image pull policy |
 | client.service.type | string | `"ClusterIP"` | Client service type |
 | client.service.port | int | `8080` | Client service port |
+| client.envFrom.configMap | string | `""` | ConfigMap name for client environment variables |
+| client.envFrom.secret | string | `""` | Secret name for client environment variables |
+| client.extraEnv | list | `[]` | Additional environment variables for client |
 | client.initContainers | list | `[]` | Init containers for the client pod |
 | client.auth.postgresql.enabled | bool | `false` | Enable PostgreSQL authentication |
 | client.auth.mysql.enabled | bool | `false` | Enable MySQL authentication |
@@ -521,6 +546,9 @@ kubectl exec -it deployment/my-guacamole-client -- nc -zv postgres.default.svc.c
 | guacd.replicaCount | int | `1` | Number of guacd replicas |
 | guacd.image.repository | string | `"guacamole/guacd"` | Guacd container image repository |
 | guacd.service.port | int | `4822` | Guacd service port |
+| guacd.envFrom.configMap | string | `""` | ConfigMap name for guacd environment variables |
+| guacd.envFrom.secret | string | `""` | Secret name for guacd environment variables |
+| guacd.extraEnv | list | `[]` | Additional environment variables for guacd |
 | guacd.initContainers | list | `[]` | Init containers for the guacd pod |
 | ingress.enabled | bool | `false` | Enable ingress |
 | httpRoute.enabled | bool | `false` | Enable Gateway API HTTPRoute |
