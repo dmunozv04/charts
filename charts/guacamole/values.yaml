@@ -414,6 +414,13 @@ client:
     # Name of Secret containing environment variables
     secret: ""
   
+  # Guacd connection override
+  # Override the guacd hostname/port the client connects to (e.g. for Consul upstream or remote guacd)
+  # Defaults to the guacd service created by this chart
+  guacd:
+    hostname: ""
+    port: ""
+
   # Additional environment variables for the client container
   # Use this to set custom environment variables not covered by the auth sections above
   extraEnv: []

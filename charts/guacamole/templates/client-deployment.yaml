@@ -64,9 +64,9 @@ spec:
           {{- end }}
           env:
             - name: GUACD_HOSTNAME
-              value: {{ include "guacamole.fullname" . }}-guacd
+              value: {{ .Values.client.guacd.hostname | default (printf "%s-guacd" (include "guacamole.fullname" .)) }}
             - name: GUACD_PORT
-              value: "{{ .Values.guacd.service.port }}"
+              value: "{{ .Values.client.guacd.port | default .Values.guacd.service.port }}"
             {{- if .Values.client.auth.postgresql.enabled }}
             {{- with .Values.client.auth.postgresql.hostname }}
             - name: POSTGRESQL_HOSTNAME
